@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noble Hero Vote</title>
+  <style>
+    :root{
+      --bg1:#0b1023;
+      --bg2:#1e3a8a;
+      --accent:#f59e0b;
+      --accent2:#fbbf24;
+      --card:rgba(0,0,0,.72);
+      --muted:#e0e7ff;
+      --text:#fff8dc;
+      --danger:#ef4444;
+      --ok:#22c55e;
+    }
+    body {
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(59,130,246,.35), transparent 60%),
+                  radial-gradient(900px 450px at 80% 20%, rgba(245,158,11,.28), transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      text-align: center;
+      padding: 2rem 1rem;
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(2rem, 3vw, 2.7rem);
+      margin: 0 0 0.75rem;
+      text-shadow: 2px 2px 6px rgba(0,0,0,.65);
+      letter-spacing: .5px;
+    }
+    .sub {
+      max-width: 760px;
+      margin: 0 auto 1.25rem;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 1rem;
+    }
+    .row{
+      display:flex;
+      justify-content:center;
+      gap:.75rem;
+      flex-wrap:wrap;
+      margin: 0 0 1rem;
+    }
+    .pill{
+      border:1px solid rgba(255,255,255,.15);
+      background: rgba(0,0,0,.35);
+      padding:.45rem .75rem;
+      border-radius:999px;
+      font-size:.9rem;
+      color: var(--muted);
+    }
+    .pill strong{ color: var(--text); }
+    .container{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    @media (min-width: 900px){
+      .container{ grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--card);
+      padding: 1.25rem;
+      border-radius: 18px;
+      box-shadow: 0 0 24px rgba(251,191,36,.15);
+      border: 1px solid rgba(251,191,36,.15);
+      backdrop-filter: blur(6px);
+    }
+    .card h2{ margin:0 0 .75rem; font-size: 1.2rem; }
+    .loginBox{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: .75rem;
+      flex-wrap:wrap;
+      padding: .75rem 1rem;
+      border-radius: 14px;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 1rem;
+    }
+    .who{
+      display:flex;
+      align-items:center;
+      gap:.65rem;
+    }
+    .avatar{
+      width:36px;
+      height:36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color: var(--muted);
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; }
+    .who .name{ text-align:left; }
+    .who .name .small{ color: var(--muted); font-size:.85rem; }
+    label {
+      font-size: 1rem;
+      display: block;
+      margin: .75rem 0 .5rem;
+      color: var(--muted);
+      text-align:left;
+    }
+    select, button {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-bottom: .75rem;
+    }
+    select {
+      background-color: #fef3c7;
+      color: #111827;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: .4px;
+      transition: transform .08s ease, background-color 0.25s;
+    }
+    button:hover { background-color: #d97706; }
+    button:active { transform: translateY(1px); }
+    button.secondary{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      font-weight: 700;
+    }
+    .msg{
+      text-align:left;
+      padding:.75rem 1rem;
+      border-radius: 12px;
+      margin-top: .25rem;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.35);
+      color: var(--muted);
+      line-height:1.35;
+    }
+    .msg.ok{ border-color: rgba(34,197,94,.35); }
+    .msg.bad{ border-color: rgba(239,68,68,.4); }
+    .msg strong{ color: var(--text); }
+    .resultsList{
+      display:flex;
+      flex-direction:column;
+      gap:.5rem;
+      margin-top:.5rem;
+      text-align:left;
+    }
+    .resultEntry{
+      display:flex;
+      justify-content:space-between;
+      gap:.75rem;
+      padding:.6rem .75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.28);
+    }
+    .resultEntry .left{ display:flex; flex-direction:column; }
+    .tag{ color: var(--muted); font-size:.85rem; }
+    .voteCount{ font-weight:800; color: var(--accent2); }
+    .hint{
+      text-align:left;
+      color: rgba(224,231,255,.85);
+      font-size: .92rem;
+      margin-top: .35rem;
+    }
+    a{ color: var(--accent2); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+
+    /* Mobile-first candidate picker */
+    .pickerSearch{
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: .6rem;
+      outline: none;
+    }
+    .pickerSearch::placeholder{ color: rgba(224,231,255,.7); }
+    .pickerGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: .55rem;
+      margin-bottom: .75rem;
+    }
+    @media(min-width: 560px){
+      .pickerGrid{ grid-template-columns: 1fr 1fr; }
+    }
+    .pickCard{
+      text-align:left;
+      padding: .8rem .85rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.28);
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+      user-select: none;
+    }
+    .pickCard:hover{ box-shadow: 0 0 16px rgba(251,191,36,.12); }
+    .pickCard:active{ transform: translateY(1px); }
+    .pickCard .top{ display:flex; justify-content:space-between; gap:.75rem; }
+    .pickCard .nm{ font-weight: 900; }
+    .pickCard .meta{ color: rgba(224,231,255,.85); font-size: .9rem; margin-top: .15rem; }
+    .pickCard .tagLine{ color: rgba(224,231,255,.75); font-size: .82rem; margin-top: .15rem; }
+    .pickCard.selected{
+      border-color: rgba(245,158,11,.55);
+      box-shadow: 0 0 18px rgba(245,158,11,.18);
+      background: rgba(245,158,11,.12);
+    }
+    .pickCard.disabled{
+      opacity: .45;
+      cursor: not-allowed;
+      filter: grayscale(.35);
+    }
+    .pickRow{
+      display:flex;
+      gap:.6rem;
+      align-items:center;
+      flex-wrap:wrap;
+      margin: .1rem 0 .8rem;
+      justify-content:flex-start;
+    }
+    .badge{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      padding:.25rem .55rem;
+      border-radius:999px;
+      color: rgba(224,231,255,.9);
+      font-size:.85rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏆 Noble Hero of the Month</h1>
+  <div class="sub">
+    Vote for the clan member who best embodied the Noble Hero spirit during CWL — solid attacks, good vibes, helpful in chat, and generous with donations.
+  </div>
+
+  <div class="row">
+    <div class="pill">Clan: <strong>{{ clan_tag }}</strong></div>
+    <div class="pill">Sign-in: <strong id="discordState">{{ 'Enabled' if discord_enabled else 'Not configured' }}</strong></div>
+    <div class="pill">Roster: <strong id="rosterState">{{ 'Enabled' if coc_enabled else 'Not configured' }}</strong></div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>🗳️ Cast Your Vote</h2>
+
+      <div class="loginBox" id="loginBox">
+        <div class="who" id="whoBox" style="display:none;">
+          <div class="avatar" id="avatarBox">?</div>
+          <div class="name">
+            <div><strong id="whoName">Logged in</strong></div>
+            <div class="small">Vote once per Discord account</div>
+          </div>
+        </div>
+
+        <div id="loginActions">
+          <a href="/auth/discord" id="loginBtn"><button type="button">🔐 Login with Discord</button></a>
+          <div class="hint">No bot needed. This just verifies you as a unique voter.</div>
+        </div>
+
+        <div id="logoutActions" style="display:none;">
+          <a href="/logout"><button type="button" class="secondary">Logout</button></a>
+        </div>
+      </div>
+
+      <form id="heroForm" style="display:none;">
+        <div class="pickRow">
+          <div class="pill">Rule: <strong>No self-votes</strong></div>
+          <div class="pill">One vote per <strong>Discord</strong> account</div>
+        </div>
+
+        <label>Your in-game name (so we can prevent self-votes):</label>
+        <input id="selfSearch" class="pickerSearch" type="text" placeholder="Search your IGN…" autocomplete="off" />
+        <div id="selfGrid" class="pickerGrid"></div>
+
+        <label>Pick your Hero of the Month:</label>
+        <input id="candidateSearch" class="pickerSearch" type="text" placeholder="Search clan members…" autocomplete="off" />
+        <div id="candidateGrid" class="pickerGrid"></div>
+
+        <!-- Hidden fields for submit -->
+        <input type="hidden" id="selfTag" />
+        <input type="hidden" id="selfName" />
+        <input type="hidden" id="candidateTag" />
+        <input type="hidden" id="candidateName" />
+
+        <button type="submit">⚔️ Cast Your Vote ⚔️</button>
+        <div class="hint">Tip: the list is pulled from the live CoC roster (cached). No more monthly copy/paste.</div>
+      </form>
+
+      <div id="message" class="msg" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Current Standings</h2>
+      <div class="hint">Auto-refreshes every 15 seconds.</div>
+      <div id="results" class="resultsList">
+        <div class="resultEntry"><span>Loading current votes…</span><span class="voteCount">…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const el = (id) => document.getElementById(id);
+
+    function discordAvatarUrl(user){
+      if (!user || !user.id) return null;
+      if (!user.avatar) return null;
+      return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+    }
+
+    function showMessage(kind, html){
+      const box = el('message');
+      box.className = 'msg ' + (kind || '');
+      box.innerHTML = html;
+      box.style.display = 'block';
+    }
+
+    async function loadMe(){
+      const res = await fetch('/me');
+      const data = await res.json();
+      return data.user;
+    }
+
+    async function loadRoster(){
+      const res = await fetch('/api/members');
+      const data = await res.json();
+      if (!data.ok){
+        throw new Error(data.error || 'Roster unavailable');
+      }
+      return data.items || [];
+    }
+
+    let rosterItems = [];
+
+    function sortRoster(items){
+      const roleRank = { leader: 0, coLeader: 1, admin: 1, elder: 2, member: 3 };
+      return (items || []).slice().sort((a,b) => {
+        const ra = roleRank[a.role] ?? 9;
+        const rb = roleRank[b.role] ?? 9;
+        if (ra !== rb) return ra - rb;
+        const ta = a.trophies ?? 0;
+        const tb = b.trophies ?? 0;
+        if (ta !== tb) return tb - ta;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+    }
+
+    function roleLabel(role){
+      if (!role) return '';
+      if (role === 'coLeader') return 'Co-Leader';
+      return role.charAt(0).toUpperCase() + role.slice(1);
+    }
+
+    function renderPicker({gridEl, items, query, selectedTag, disabledTag, onPick}){
+      const q = (query || '').trim().toLowerCase();
+      const filtered = !q ? items : items.filter(m =>
+        (m.name || '').toLowerCase().includes(q) || (m.tag || '').toLowerCase().includes(q)
+      );
+
+      gridEl.innerHTML = '';
+      if (filtered.length === 0){
+        gridEl.innerHTML = `<div class="msg" style="margin:0;">No matches. Try a different search.</div>`;
+        return;
+      }
+
+      filtered.forEach(m => {
+        const isSelected = selectedTag && m.tag === selectedTag;
+        const isDisabled = disabledTag && m.tag === disabledTag;
+        const trophies = (m.trophies ?? '') !== '' ? `${m.trophies}🏆` : '';
+        const league = m.league ? m.league : '';
+        const role = roleLabel(m.role);
+
+        const card = document.createElement('div');
+        card.className = 'pickCard' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '');
+        card.setAttribute('role','button');
+        card.setAttribute('tabindex', isDisabled ? '-1' : '0');
+        card.innerHTML = `
+          <div class="top">
+            <div class="nm">${m.name || 'Unknown'}</div>
+            <div>${trophies}</div>
+          </div>
+          <div class="meta">${[league, role].filter(Boolean).join(' • ')}</div>
+          <div class="tagLine">${m.tag || ''}${isDisabled ? ' • (you)' : ''}</div>
+        `;
+
+        if (!isDisabled){
+          const pick = () => onPick(m);
+          card.addEventListener('click', pick);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
+          });
+        }
+
+        gridEl.appendChild(card);
+      });
+    }
+
+    async function fetchResults(){
+      try{
+        const res = await fetch('/results');
+        const data = await res.json();
+        const list = el('results');
+        list.innerHTML = '';
+        if (!Array.isArray(data) || data.length === 0){
+          list.innerHTML = `<div class="resultEntry"><span>No votes yet.</span><span class="voteCount">0</span></div>`;
+          return;
+        }
+        data.forEach((r, idx) => {
+          const div = document.createElement('div');
+          div.className = 'resultEntry';
+          div.innerHTML = `
+            <div class="left">
+              <div><strong>#${idx+1} ${r.candidateName}</strong></div>
+              <div class="tag">${r.candidateTag}</div>
+            </div>
+            <div class="voteCount">${r.votes} vote${r.votes === 1 ? '' : 's'}</div>
+          `;
+          list.appendChild(div);
+        });
+      } catch(e){
+        el('results').innerHTML = `<div class="resultEntry"><span>Failed to load results.</span><span class="voteCount">!</span></div>`;
+      }
+    }
+
+    async function boot(){
+      // Load standings immediately
+      fetchResults();
+      setInterval(fetchResults, 15000);
+
+      // Determine login state
+      let user = null;
+      try{ user = await loadMe(); } catch(e){}
+
+      if (!user){
+        el('heroForm').style.display = 'none';
+        el('whoBox').style.display = 'none';
+        el('loginActions').style.display = 'block';
+        el('logoutActions').style.display = 'none';
+        showMessage('', 'Login with Discord to vote. <strong>One vote per Discord account.</strong>');
+        return;
+      }
+
+      // Show user
+      el('whoBox').style.display = 'flex';
+      el('loginActions').style.display = 'none';
+      el('logoutActions').style.display = 'block';
+      const displayName = user.global_name || user.username || 'Discord user';
+      el('whoName').textContent = displayName;
+
+      // Avatar
+      const avatarUrl = discordAvatarUrl(user);
+      const avatarBox = el('avatarBox');
+      if (avatarUrl){
+        avatarBox.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
+      } else {
+        avatarBox.textContent = (displayName[0] || '?').toUpperCase();
+      }
+
+      // Load roster
+      try{
+        rosterItems = sortRoster(await loadRoster());
+
+        // Picker state
+        let selectedSelf = null;
+        let selectedCandidate = null;
+
+        const selfSearch = el('selfSearch');
+        const candidateSearch = el('candidateSearch');
+        const selfGrid = el('selfGrid');
+        const candidateGrid = el('candidateGrid');
+
+        const setHidden = (id, val) => { const node = el(id); if (node) node.value = val || ''; };
+
+        const render = () => {
+          renderPicker({
+            gridEl: selfGrid,
+            items: rosterItems,
+            query: selfSearch.value,
+            selectedTag: selectedSelf?.tag,
+            disabledTag: null,
+            onPick: (m) => {
+              selectedSelf = m;
+              setHidden('selfTag', m.tag);
+              setHidden('selfName', m.name);
+              // If candidate equals self, clear it
+              if (selectedCandidate && selectedCandidate.tag === m.tag){
+                selectedCandidate = null;
+                setHidden('candidateTag', '');
+                setHidden('candidateName', '');
+              }
+              render();
+            }
+          });
+
+          renderPicker({
+            gridEl: candidateGrid,
+            items: rosterItems,
+            query: candidateSearch.value,
+            selectedTag: selectedCandidate?.tag,
+            disabledTag: selectedSelf?.tag,
+            onPick: (m) => {
+              // Client-side self-vote guard
+              if (selectedSelf && m.tag === selectedSelf.tag) return;
+              selectedCandidate = m;
+              setHidden('candidateTag', m.tag);
+              setHidden('candidateName', m.name);
+              render();
+            }
+          });
+        };
+
+        selfSearch.addEventListener('input', render);
+        candidateSearch.addEventListener('input', render);
+        render();
+
+        el('heroForm').style.display = 'block';
+        el('rosterState').textContent = 'Enabled';
+        showMessage('ok', `Welcome, <strong>${displayName}</strong>. First select your IGN (to prevent self-votes), then pick your hero.`);
+      } catch(err){
+        el('heroForm').style.display = 'none';
+        el('rosterState').textContent = 'Unavailable';
+        showMessage('bad', `Roster unavailable right now. This usually means the CoC API key isn’t set up/whitelisted yet.<br><br><strong>Details:</strong> ${String(err.message || err)}`);
+      }
+    }
+
+    el('heroForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const selfTag = el('selfTag').value;
+      const selfName = el('selfName').value;
+      const candidateTag = el('candidateTag').value;
+      const candidateName = el('candidateName').value;
+
+      if (!selfTag || !selfName){
+        showMessage('bad', 'Pick <strong>your in-game name</strong> first (this prevents self-votes).');
+        return;
+      }
+      if (!candidateTag || !candidateName){
+        showMessage('bad', 'Pick a <strong>Hero of the Month</strong> to vote for.');
+        return;
+      }
+      if (selfTag === candidateTag){
+        showMessage('bad', 'Self-votes are not allowed. Pick a different clan member.');
+        return;
+      }
+
+      try{
+        const res = await fetch('/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ selfTag, selfName, candidateTag, candidateName })
+        });
+        const data = await res.json();
+
+        if (res.status === 409 && data?.yourVote){
+          showMessage('bad', `You already voted for <strong>${data.yourVote.candidateName}</strong> (${data.yourVote.candidateTag}).`);
+          return;
+        }
+        if (!res.ok){
+          if (data?.error === 'self_vote_not_allowed'){
+            showMessage('bad', data?.message || 'Self-votes are not allowed.');
+          } else {
+            showMessage('bad', data?.error ? `Error: ${data.error}` : 'Vote failed.');
+          }
+          return;
+        }
+        showMessage('ok', `Vote locked in for <strong>${candidateName}</strong> (${candidateTag}). 🧙‍♂️`);
+        fetchResults();
+      } catch(err){
+        showMessage('bad', 'Failed to submit vote.');
+      }
+    });
+
+    boot();
+  </script>
+</body>
+</html>
